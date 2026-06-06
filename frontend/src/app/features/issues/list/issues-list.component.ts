@@ -7,12 +7,16 @@ import { IssuesService } from '../../../core/issues.service';
 import { Issue, Status, Priority } from '../../../core/models';
 import { BadgeComponent } from '../../../shared/components/badge/badge.component';
 
+/**
+ * Issues list page providing CRUD table view, filtering, and pagination.
+ */
 @Component({
   selector: 'app-issues-list',
   standalone: true,
   imports: [RouterLink, ReactiveFormsModule, NgIf, NgFor, DatePipe, TitleCasePipe, BadgeComponent],
   template: `
     <div class="space-y-6">
+      <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 class="text-2xl font-bold text-gray-900">Incidencias</h2>
@@ -109,42 +113,84 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
             </tbody>
           </table>
         </div>
+
+        <!-- Pagination -->
+        <div class="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+          <span class="text-sm text-gray-500">
+            Mostrando {{ issues().length }} registros
+          </span>
+          <div class="flex items-center gap-2">
+            <button (click)="prevPage()" [disabled]="offset() === 0"
+                    class="h-8 px-3 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+              Anterior
+            </button>
+            <button (click)="nextPage()" [disabled]="issues().length < limit"
+                    class="h-8 px-3 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+              Siguiente
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   `
 })
 export class IssuesListComponent implements OnInit {
+  /** Current page of issues. */
   issues = signal<Issue[]>([]);
+  /** Error message signal for user feedback. */
   error = signal<string>('');
-  filterForm = this.fb.group({
-    status: [''],
-    priority: ['']
-  });
+  /** Reactive filter form bound to dropdown controls. */
+  filterForm = this.fb.group({ status: [''], priority: [''] });
+  /** Page size for pagination. */
+  limit = 20;
+  /** Number of records to skip (pagination offset). */
+  offset = signal(0);
 
   constructor(private issuesService: IssuesService, private fb: FormBuilder) {
-    this.filterForm.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.loadIssues());
+    this.filterForm.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.offset.set(0);
+      this.loadIssues();
+    });
   }
 
+  /** Load issues on component initialization. */
   ngOnInit(): void {
     this.loadIssues();
   }
 
+  /** Fetch issues from the API applying current filters and pagination. */
   loadIssues(): void {
     this.error.set('');
     const statusValue = this.filterForm.value.status;
     const priorityValue = this.filterForm.value.priority;
     const status = statusValue ? statusValue as Status : undefined;
     const priority = priorityValue ? priorityValue as Priority : undefined;
-    this.issuesService.getAll(status, priority).subscribe({
+
+    this.issuesService.getAll(status, priority, this.limit, this.offset()).subscribe({
       next: data => this.issues.set(data),
       error: () => this.error.set('Error al cargar las incidencias')
     });
   }
 
+  /** Reset filters and return to the first page. */
   clearFilters(): void {
     this.filterForm.reset({ status: '', priority: '' });
+    this.offset.set(0);
   }
 
+  /** Advance to the next page. */
+  nextPage(): void {
+    this.offset.update(v => v + this.limit);
+    this.loadIssues();
+  }
+
+  /** Return to the previous page. */
+  prevPage(): void {
+    this.offset.update(v => Math.max(0, v - this.limit));
+    this.loadIssues();
+  }
+
+  /** Prompt confirmation and delete an issue by ID. */
   deleteIssue(id: string): void {
     if (!confirm('¿Estás seguro de eliminar esta incidencia?')) return;
     this.issuesService.delete(id).subscribe({
@@ -153,10 +199,12 @@ export class IssuesListComponent implements OnInit {
     });
   }
 
+  /** Map priority string to badge variant for UI rendering. */
   priorityVariant(p: string): 'danger' | 'warning' | 'secondary' {
     return p === 'alta' ? 'danger' : p === 'media' ? 'warning' : 'secondary';
   }
 
+  /** Map status string to badge variant for UI rendering. */
   statusVariant(s: string): 'success' | 'warning' | 'secondary' {
     return s === 'completado' ? 'success' : s === 'en progreso' ? 'warning' : 'secondary';
   }

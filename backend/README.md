@@ -34,6 +34,14 @@ Para desarrollo local sin GCP, usa:
 export USE_MOCK_DB=true
 ```
 
+## Tests
+
+```bash
+cd backend
+source venv/bin/activate
+pytest tests/ -v
+```
+
 ## URL de Producción
 
 - **API**: https://issue-tracker-api-356627546610.us-central1.run.app
