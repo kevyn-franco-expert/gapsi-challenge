@@ -1,0 +1,164 @@
+{
+  "info": {
+    "_postman_id": "gapsi-issue-tracker-2026",
+    "name": "Issue Tracker API",
+    "description": "Colección API para el examen práctico FullStack - Angular, Python y GCP",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "username", "value": "admin", "type": "text" },
+                { "key": "password", "value": "admin123", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Issues",
+      "item": [
+        {
+          "name": "Create Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json", "type": "text" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Error en módulo de pagos\",\n  \"description\": \"Los usuarios reportan que no pueden completar el checkout\",\n  \"priority\": \"alta\",\n  \"status\": \"abierto\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/issues",
+              "host": ["{{base_url}}"],
+              "path": ["issues"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Issues",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/issues?status=&priority=",
+              "host": ["{{base_url}}"],
+              "path": ["issues"],
+              "query": [
+                { "key": "status", "value": "" },
+                { "key": "priority", "value": "" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Issue",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/issues/{{issue_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["issues", "{{issue_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Issue",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json", "type": "text" },
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"en progreso\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/issues/{{issue_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["issues", "{{issue_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Issue",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/issues/{{issue_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["issues", "{{issue_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/issues/summary",
+              "host": ["{{base_url}}"],
+              "path": ["issues", "summary"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "https://issue-tracker-api-356627546610.us-central1.run.app", "type": "string" },
+    { "key": "access_token", "value": "", "type": "string" },
+    { "key": "issue_id", "value": "", "type": "string" }
+  ]
+}

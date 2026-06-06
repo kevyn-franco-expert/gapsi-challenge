@@ -1,0 +1,35 @@
+# Backend
+backend/venv/
+backend/__pycache__/
+backend/app/__pycache__/
+backend/app/*/__pycache__/
+backend/*.pyc
+backend/.env
+backend/.pytest_cache/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Tests
+frontend/coverage/
+backend/.coverage
+
+# Excluded from repo
+Examen práctico FullStack - Angular  y Python en GCP v 1.0.pdf
+DESIGN_SYSTEM_REFERENCE.md
+TODO.md
